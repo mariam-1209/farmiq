@@ -25,7 +25,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-green-50 px-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg p-8 text-center">
         <h1 className="text-3xl font-bold text-green-700 mb-2">FarmIQ</h1>
-        <p className="text-gray-500 mb-8">ರೈತರ ಸ್ಮಾರ್ಟ್ ಸಹಾಯಕ</p>
+        <p className="text-gray-500 mb-8">Smart farming assistant</p>
 
         <button
           onClick={signInWithGoogle}

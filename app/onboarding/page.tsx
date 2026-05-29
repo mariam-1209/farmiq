@@ -7,12 +7,12 @@ import { useState } from "react";
 const STATES = ["Karnataka", "Maharashtra", "Tamil Nadu", "Andhra Pradesh", "Telangana"];
 
 const CROPS = [
-  { id: "tomato", label: "Tomato / ಟೊಮೆಟೊ" },
-  { id: "potato", label: "Potato / ಆಲೂಗಡ್ಡೆ" },
-  { id: "rice", label: "Rice / ಅಕ್ಕಿ" },
-  { id: "cotton", label: "Cotton / ಹತ್ತಿ" },
-  { id: "chili", label: "Chili / ಮೆಣಸಿನಕಾಯಿ" },
-  { id: "onion", label: "Onion / ಈರುಳ್ಳಿ" },
+  { id: "tomato", label: "Tomato " },
+  { id: "potato", label: "Potato "},
+  { id: "rice", label: "Rice" },
+  { id: "cotton", label: "Cotton " },
+  { id: "chili", label: "Chili " },
+  { id: "onion", label: "Onion" },
 ];
 
 export default function OnboardingPage() {
