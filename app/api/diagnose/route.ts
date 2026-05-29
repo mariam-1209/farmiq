@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { prisma } from "@/lib/prisma";
 import { analyzeCropPhoto } from "@/lib/agents/cropDoctor";
+import { generateTreatmentPlan } from "@/lib/agents/treatmentPlanner";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // 2. Validate input
+  // 2. Validate
   let body;
   try {
     body = schema.parse(await request.json());
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // 4. Signed URL via admin client
+  // 4. Signed URL
   const admin = createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Could not access photo" }, { status: 500 });
   }
 
-  // 5. Create the row first (status: processing) so the UI has something to render
+  // 5. Create processing row
   const diagnosis = await prisma.diagnosis.create({
     data: {
       userId: user.id,
@@ -54,11 +55,11 @@ export async function POST(request: Request) {
     },
   });
 
-  // 6. Run Gemini Vision analysis
+  // 6. Multi-agent pipeline: Vision → Treatment
   try {
+    // --- Agent 1: Vision ---
     const analysis = await analyzeCropPhoto(signedData.signedUrl);
 
-    // If photo isn't a plant, mark as failed with explanation
     if (!analysis.isPlant) {
       await prisma.diagnosis.update({
         where: { id: diagnosis.id },
@@ -72,7 +73,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ diagnosisId: diagnosis.id });
     }
 
-    // Save successful analysis
+    // --- Agent 2: Treatment Planner ---
+    let treatmentPlan = null;
+    if (analysis.crop && analysis.disease) {
+      try {
+        treatmentPlan = await generateTreatmentPlan({
+          crop: analysis.crop,
+          disease: analysis.disease,
+          severity: analysis.severity,
+          symptoms: analysis.symptoms,
+          observation: analysis.rawObservation,
+        });
+      } catch (err) {
+        console.error("Treatment agent failed:", err);
+        // Don't fail the whole diagnosis if treatment fails — partial result is still useful
+      }
+    }
+
+    // Save combined result
     await prisma.diagnosis.update({
       where: { id: diagnosis.id },
       data: {
@@ -84,14 +102,14 @@ export async function POST(request: Request) {
         treatmentPlan: {
           symptoms: analysis.symptoms,
           observation: analysis.rawObservation,
-          // Treatment steps come from the next agent (Day 9)
+          plan: treatmentPlan,
         },
       },
     });
 
     return NextResponse.json({ diagnosisId: diagnosis.id });
   } catch (err) {
-    console.error("Vision agent failed:", err);
+    console.error("Pipeline failed:", err);
     await prisma.diagnosis.update({
       where: { id: diagnosis.id },
       data: {
