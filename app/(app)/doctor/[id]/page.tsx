@@ -5,6 +5,8 @@ import { Loader2, AlertCircle, CheckCircle, AlertTriangle, ShoppingBag, Shield }
 import type { TreatmentPlan } from "@/lib/agents/treatmentPlanner";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 
+export const dynamic = "force-dynamic";
+
 export default async function DiagnosisResultPage({
   params,
 }: {
@@ -21,19 +23,19 @@ export default async function DiagnosisResultPage({
   if (diagnosis.userId !== user.id) notFound();
 
   // Regenerate fresh signed URL if we have a stored path (handles expiry)
-let displayPhotoUrl = diagnosis.photoUrl;
-if (diagnosis.photoPath) {
-  const admin = createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-  const { data: signedData } = await admin.storage
-    .from("crop-photos")
-    .createSignedUrl(diagnosis.photoPath, 60 * 60); // 1 hour
-  if (signedData) {
-    displayPhotoUrl = signedData.signedUrl;
+  let displayPhotoUrl = diagnosis.photoUrl;
+  if (diagnosis.photoPath) {
+    const admin = createAdminClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    const { data: signedData } = await admin.storage
+      .from("crop-photos")
+      .createSignedUrl(diagnosis.photoPath, 60 * 60);
+    if (signedData) {
+      displayPhotoUrl = signedData.signedUrl;
+    }
   }
-}
 
   const treatmentData = diagnosis.treatmentPlan as {
     symptoms?: string[];
@@ -67,16 +69,24 @@ if (diagnosis.photoPath) {
       )}
 
       {diagnosis.status === "failed" && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="text-red-600 shrink-0 mt-0.5" size={20} />
-            <div>
-              <p className="font-medium text-red-800">Analysis failed</p>
-              <p className="text-sm text-red-700 mt-1">
-                {treatmentData?.error ?? "Please try again with a different photo."}
-              </p>
+        <div className="space-y-3">
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="text-red-600 shrink-0 mt-0.5" size={20} />
+              <div>
+                <p className="font-medium text-red-800">Analysis failed</p>
+                <p className="text-sm text-red-700 mt-1">
+                  {treatmentData?.error ?? "Please try again with a different photo."}
+                </p>
+              </div>
             </div>
           </div>
+          <a
+            href="/doctor"
+            className="block w-full bg-green-600 text-white py-3 rounded-xl font-medium text-center"
+           >
+            Try Again
+          </a>
         </div>
       )}
 
