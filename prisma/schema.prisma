@@ -59,6 +59,7 @@ model Diagnosis {
   userId          String   @db.Uuid
   profile         Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
   photoUrl        String
+  photoPath       String?  // ← ADD THIS LINE
   voiceDescription String?
   cropDetected    String?
   diseaseDetected String?

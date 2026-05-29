@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import { Loader2, AlertCircle, CheckCircle, AlertTriangle, ShoppingBag, Shield } from "lucide-react";
 import type { TreatmentPlan } from "@/lib/agents/treatmentPlanner";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
 
 export default async function DiagnosisResultPage({
   params,
@@ -18,6 +19,21 @@ export default async function DiagnosisResultPage({
   const diagnosis = await prisma.diagnosis.findUnique({ where: { id } });
   if (!diagnosis) notFound();
   if (diagnosis.userId !== user.id) notFound();
+
+  // Regenerate fresh signed URL if we have a stored path (handles expiry)
+let displayPhotoUrl = diagnosis.photoUrl;
+if (diagnosis.photoPath) {
+  const admin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+  const { data: signedData } = await admin.storage
+    .from("crop-photos")
+    .createSignedUrl(diagnosis.photoPath, 60 * 60); // 1 hour
+  if (signedData) {
+    displayPhotoUrl = signedData.signedUrl;
+  }
+}
 
   const treatmentData = diagnosis.treatmentPlan as {
     symptoms?: string[];
@@ -40,7 +56,7 @@ export default async function DiagnosisResultPage({
       <h1 className="text-2xl font-bold text-gray-800">Diagnosis</h1>
 
       <div className="rounded-2xl overflow-hidden bg-gray-100">
-        <img src={diagnosis.photoUrl} alt="Uploaded crop" className="w-full" />
+        <img src={displayPhotoUrl} alt="Uploaded crop" className="w-full" />
       </div>
 
       {diagnosis.status === "processing" && (

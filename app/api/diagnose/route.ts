@@ -51,6 +51,7 @@ export async function POST(request: Request) {
     data: {
       userId: user.id,
       photoUrl: signedData.signedUrl,
+      photoPath: body.photoPath,
       status: "processing",
     },
   });
