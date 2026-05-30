@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FarmIQ
 
-## Getting Started
+A multi-agent AI assistant that diagnoses plant diseases from photos and responds in Kannada, Hindi, or English.
 
-First, run the development server:
+**Live:** https://farmiq-mu.vercel.app
+
+
+
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/landing.png" width="220" alt="Landing page" />
+  <img src="screenshots/dashboard.png" width="220" alt="Dashboard" />
+  <img src="screenshots/result.png" width="220" alt="Diagnosis result" />
+  <img src="screenshots/voice1.png" width="220" alt="Voice input" />
+  <img src="screenshots/voice2.png" width="220" alt="Voice speaking" />
+</p>
+
+---
+
+## Overview
+
+FarmIQ accepts a leaf photo or a voice query and returns a structured treatment plan in the user's preferred language. It is built for Indian farmers and home gardeners underserved by English-only AI tools.
+
+---
+
+## Architecture
+
+| Agent | Role | Model |
+|---|---|---|
+| Vision | Identifies plant, disease, severity, symptoms from a photo | Gemini 2.5 Flash |
+| Treatment | Generates structured treatment plan with steps, products, prevention | Groq Llama 3.3 70B |
+| Orchestrator | Classifies voice transcripts and routes intent | Groq Llama 3.3 70B |
+| Translation | Translates English plans into Kannada or Hindi | Groq Llama 3.3 70B |
+| Voice Pipeline | Speech-to-text and text-to-speech with audio caching | Sarvam AI |
+
+Each agent is independent and specialized, allowing the system to use the most cost-effective model per task and to degrade gracefully when any single agent fails.
+
+---
+
+## Tech Stack
+
+- Next.js 16 (App Router), TypeScript, Tailwind CSS, Framer Motion
+- Prisma 7 with `@prisma/adapter-pg`, Supabase Postgres
+- Supabase Auth (Google OAuth), Supabase Storage (private buckets with signed URLs)
+- Gemini, Groq, Sarvam APIs
+- Deployed on Vercel
+
+---
+
+## Engineering Highlights
+
+- Private storage with 1-hour signed URLs regenerated on every render
+- Ownership validation and Zod input validation on every API route
+- TTS audio cached by SHA-256 hash of text and language
+- Graceful degradation when individual agents fail
+
+---
+
+## Vision Benchmark
+
+Tested against 10 manually curated leaf images covering four crops and six conditions.
+
+| Class | Accuracy |
+|---|---|
+| Rice (Blast, Healthy) | 100% |
+| Potato (Healthy, Late Blight) | 100% |
+| Tomato Early Blight | 50% |
+| Potato Early Blight | 0% |
+| Tomato Late Blight | 0% |
+| Tomato Healthy | 0% |
+
+Overall: 60% crop, 50% disease, ~4s average latency.
+
+The model performs well on visually distinctive diseases and underperforms on tomato leaf conditions. A production version would augment Gemini with a specialized classifier as a second opinion.
+
+---
+
+## Roadmap
+
+- Offline PWA mode with sync on reconnect
+- Larger benchmark study with confusion matrix
+- Mandi price integration via data.gov.in
+- Diagnosis-aware crop calendar
+
+---
+
+## Local Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+git clone https://github.com/mariam-1209/farmiq.git
+cd farmiq
+pnpm install
+cp .env.example .env
+pnpm prisma db push
+pnpm prisma generate
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Required environment variables: Supabase URL and keys, `DATABASE_URL`, `DIRECT_URL`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `SARVAM_API_KEY`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## License
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
