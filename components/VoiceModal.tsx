@@ -104,12 +104,7 @@ export default function VoiceModal({ onClose }: { onClose: () => void }) {
           onClose();
           router.push("/doctor");
         }, 1500);
-      } else if (data.intent.intent === "price") {
-        setTimeout(() => {
-          onClose();
-          router.push("/prices");
-        }, 1500);
-      }
+      } 
       // unclear and general stay in modal
     } catch (err) {
       console.error(err);
@@ -187,11 +182,7 @@ export default function VoiceModal({ onClose }: { onClose: () => void }) {
                       Taking you to Crop Doctor...
                     </div>
                   )}
-                  {intent.intent === "price" && (
-                    <div className="bg-green-50 text-green-800 rounded-xl p-3 text-sm">
-                      Taking you to Market Prices...
-                    </div>
-                  )}
+                
                   {intent.intent === "general" && (
                     <div className="bg-blue-50 text-blue-800 rounded-xl p-3 text-sm">
                       I understand: {intent.reasoning}

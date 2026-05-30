@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Stethoscope, IndianRupee, FileText } from "lucide-react";
+import { Stethoscope } from "lucide-react";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -26,22 +26,8 @@ export default async function DashboardPage() {
       bg: "bg-green-100",
       color: "text-green-700",
     },
-    {
-      href: "/prices",
-      icon: IndianRupee,
-      title: "Market Prices",
-      subtitle: "Live mandi rates",
-      bg: "bg-yellow-100",
-      color: "text-yellow-700",
-    },
-    {
-      href: "/schemes",
-      icon: FileText,
-      title: "Yojana Check",
-      subtitle: "Find government schemes",
-      bg: "bg-blue-100",
-      color: "text-blue-700",
-    },
+    
+      
   ];
 
   return (

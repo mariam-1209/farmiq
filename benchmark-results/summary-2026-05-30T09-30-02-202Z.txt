@@ -1,0 +1,22 @@
+FarmIQ Vision Agent — Benchmark Results
+========================================
+Date:               2026-05-30T09:30:02.209Z
+Model:              gemini-2.5-flash
+Samples:            10
+Successful calls:   6
+
+Overall:
+  Crop accuracy:    60.0%
+  Disease accuracy: 50.0%
+  Both correct:     50.0%
+  Avg latency:      4010ms
+
+Per-class:
+  Potato - Early Blight: 0/1 (0%)
+  Potato - Healthy: 1/1 (100%)
+  Potato - Late Blight: 1/1 (100%)
+  Rice - Blast: 1/1 (100%)
+  Rice - Healthy: 1/1 (100%)
+  Tomato - Early Blight: 1/2 (50%)
+  Tomato - Healthy: 0/2 (0%)
+  Tomato - Late Blight: 0/1 (0%)

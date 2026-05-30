@@ -2,13 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Stethoscope, IndianRupee, FileText, User } from "lucide-react";
-
+import { Home, Stethoscope, User } from "lucide-react";
 const tabs = [
   { href: "/dashboard", icon: Home, label: "Home" },
   { href: "/doctor", icon: Stethoscope, label: "Doctor" },
-  { href: "/prices", icon: IndianRupee, label: "Prices" },
-  { href: "/schemes", icon: FileText, label: "Schemes" },
   { href: "/profile", icon: User, label: "Profile" },
 ];
 
