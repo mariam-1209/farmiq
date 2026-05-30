@@ -11,12 +11,13 @@ A multi-agent AI assistant that diagnoses plant diseases from photos and respond
 
 ## Screenshots
 
+## Screenshots
+
 <p align="center">
-  <img src="screenshots/landing.png" width="220" alt="Landing page" />
-  <img src="screenshots/dashboard.png" width="220" alt="Dashboard" />
-  <img src="screenshots/result.png" width="220" alt="Diagnosis result" />
-  <img src="screenshots/voice1.png" width="220" alt="Voice input" />
-  <img src="screenshots/voice2.png" width="220" alt="Voice speaking" />
+  <img src="screenshots/landing.jpg.jpeg" width="200" alt="Landing page" />
+  <img src="screenshots/dashboard.jpg.jpeg" width="200" alt="Dashboard" />
+  <img src="screenshots/result.jpg.jpeg" width="200" alt="Diagnosis result" />
+  <img src="screenshots/voice1.jpg.jpeg" width="200" alt="Voice input" />
 </p>
 
 ---
