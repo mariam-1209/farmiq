@@ -28,17 +28,6 @@ FarmIQ accepts a leaf photo or a voice query and returns a structured treatment 
 
 ---
 
-## Architecture
-
-| Agent | Role | Model |
-|---|---|---|
-| Vision | Identifies plant, disease, severity, symptoms from a photo | Gemini 2.5 Flash |
-| Treatment | Generates structured treatment plan with steps, products, prevention | Groq Llama 3.3 70B |
-| Orchestrator | Classifies voice transcripts and routes intent | Groq Llama 3.3 70B |
-| Translation | Translates English plans into Kannada or Hindi | Groq Llama 3.3 70B |
-| Voice Pipeline | Speech-to-text and text-to-speech with audio caching | Sarvam AI |
-
-Each agent is independent and specialized, allowing the system to use the most cost-effective model per task and to degrade gracefully when any single agent fails.
 
 ---
 
@@ -52,27 +41,11 @@ Each agent is independent and specialized, allowing the system to use the most c
 
 ---
 
-## Engineering Highlights
 
-- Private storage with 1-hour signed URLs regenerated on every render
-- Ownership validation and Zod input validation on every API route
-- TTS audio cached by SHA-256 hash of text and language
-- Graceful degradation when individual agents fail
-
----
 
 ## Vision Benchmark
 
-Tested against 10 manually curated leaf images covering four crops and six conditions.
 
-| Class | Accuracy |
-|---|---|
-| Rice (Blast, Healthy) | 100% |
-| Potato (Healthy, Late Blight) | 100% |
-| Tomato Early Blight | 50% |
-| Potato Early Blight | 0% |
-| Tomato Late Blight | 0% |
-| Tomato Healthy | 0% |
 
 Overall: 60% crop, 50% disease, ~4s average latency.
 
@@ -80,14 +53,7 @@ The model performs well on visually distinctive diseases and underperforms on to
 
 ---
 
-## Roadmap
 
-- Offline PWA mode with sync on reconnect
-- Larger benchmark study with confusion matrix
-- Mandi price integration via data.gov.in
-- Diagnosis-aware crop calendar
-
----
 
 ## Local Setup
 
