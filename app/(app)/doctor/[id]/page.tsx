@@ -4,6 +4,7 @@ import { redirect, notFound } from "next/navigation";
 import { Loader2, AlertCircle, CheckCircle, AlertTriangle, ShoppingBag, Shield } from "lucide-react";
 import type { TreatmentPlan } from "@/lib/agents/treatmentPlanner";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
+import ListenButton from "@/components/ListenButton";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,8 @@ export default async function DiagnosisResultPage({
   const diagnosis = await prisma.diagnosis.findUnique({ where: { id } });
   if (!diagnosis) notFound();
   if (diagnosis.userId !== user.id) notFound();
+  const profile = await prisma.profile.findUnique({ where: { id: user.id } });
+  const userLang = (profile?.primaryLanguage ?? "en") as "kn" | "hi" | "en";
 
   // Regenerate fresh signed URL if we have a stored path (handles expiry)
   let displayPhotoUrl = diagnosis.photoUrl;
@@ -221,6 +224,12 @@ export default async function DiagnosisResultPage({
                   </p>
                 </div>
               )}
+               
+               {/* Listen Button */}
+              <ListenButton
+                text={`Diagnosis: ${diagnosis.diseaseDetected ?? "Unknown"} on ${diagnosis.cropDetected ?? "your plant"}. ${plan.summary} ${plan.treatmentSteps?.map((s) => `Step ${s.step}: ${s.title}. ${s.description}`).join(" ") ?? ""} ${plan.whenToSeeExpert ?? ""}`}
+                language={userLang}
+              />
 
               {/* Disclaimer */}
               {plan.disclaimer && (
