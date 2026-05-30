@@ -26,9 +26,15 @@ export default async function AppLayout({
   }
 
   return (
-    <div className="min-h-screen bg-green-50">
+    <div
+      className="min-h-screen"
+      style={{
+        background: "#faf8f4",
+        fontFamily: "var(--font-jakarta, system-ui, sans-serif)",
+      }}
+    >
       <TopBar />
-      <main className="max-w-md mx-auto pb-20">{children}</main>
+      <main className="max-w-md mx-auto pb-24 px-0">{children}</main>
       <BottomNav />
     </div>
   );

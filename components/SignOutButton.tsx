@@ -2,8 +2,9 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function SignOutButton() {
   const router = useRouter();
@@ -18,13 +19,23 @@ export default function SignOutButton() {
   }
 
   return (
-    <button
+    <motion.button
       onClick={handleSignOut}
       disabled={loading}
-      className="w-full bg-red-50 text-red-700 border border-red-200 py-3 rounded-2xl font-medium flex items-center justify-center gap-2 hover:bg-red-100 transition disabled:opacity-50"
+      whileTap={{ scale: 0.98 }}
+      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm border transition-all disabled:opacity-60"
+      style={{
+        background: "#fef2f2",
+        color: "#b91c1c",
+        borderColor: "#fecaca",
+      }}
     >
-      <LogOut size={18} />
+      {loading ? (
+        <Loader2 size={16} className="animate-spin" />
+      ) : (
+        <LogOut size={16} />
+      )}
       {loading ? "Signing out..." : "Sign Out"}
-    </button>
+    </motion.button>
   );
 }

@@ -2,6 +2,7 @@
 
 import { Volume2, Loader2, Pause } from "lucide-react";
 import { useState, useRef } from "react";
+import { motion } from "framer-motion";
 
 export default function ListenButton({
   text,
@@ -64,30 +65,51 @@ export default function ListenButton({
 
   return (
     <div>
-      <button
+      <motion.button
         onClick={handleClick}
         disabled={loading}
-        className="w-full flex items-center justify-center gap-2 bg-green-50 text-green-700 border border-green-200 py-3 rounded-xl font-medium hover:bg-green-100 transition disabled:opacity-50"
+        whileTap={{ scale: 0.98 }}
+        className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-semibold text-sm transition-all disabled:opacity-60"
+        style={
+          playing
+            ? {
+                background: "#f0faf4",
+                color: "#1d5c3a",
+                border: "2px solid #1d5c3a",
+              }
+            : {
+                background: "linear-gradient(135deg, #1d5c3a 0%, #2d8653 100%)",
+                color: "white",
+                boxShadow: "0 4px 14px rgba(29,92,58,0.25)",
+                border: "2px solid transparent",
+              }
+        }
       >
         {loading ? (
           <>
-            <Loader2 className="animate-spin" size={18} />
+            <Loader2 size={17} className="animate-spin" />
             Preparing audio...
           </>
         ) : playing ? (
           <>
-            <Pause size={18} />
-            Stop
+            <Pause size={17} />
+            Stop Playback
           </>
         ) : (
           <>
-            <Volume2 size={18} />
-            Listen
+            <Volume2 size={17} />
+            Listen to Diagnosis
           </>
         )}
-      </button>
+      </motion.button>
+
       {error && (
-        <p className="text-xs text-red-600 mt-1 text-center">{error}</p>
+        <p
+          className="text-xs text-center mt-1.5"
+          style={{ color: "#dc2626" }}
+        >
+          {error}
+        </p>
       )}
     </div>
   );
