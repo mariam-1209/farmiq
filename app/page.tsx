@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   Leaf,
@@ -18,6 +19,61 @@ const fadeUp = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0 },
 };
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" as const }
+  },
+};
+
+
+function Counter({ value, duration = 0.8 }: { value: number; duration?: number }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (isInView) {
+      let start = 0;
+      const end = value;
+      if (start === end) return;
+
+      const totalMiliseconds = duration * 1000;
+      const startTime = performance.now();
+
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / totalMiliseconds, 1);
+        
+        // ease-out cubic
+        const easeOutProgress = 1 - Math.pow(1 - progress, 3);
+        
+        setCount(Math.floor(easeOutProgress * (end - start) + start));
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    }
+  }, [isInView, value, duration]);
+
+  return <span ref={ref}>{count}</span>;
+}
+
 
 export default function Home() {
   return (
@@ -50,17 +106,24 @@ export default function Home() {
               FarmIQ
             </span>
           </div>
-          <Link
-            href="/login"
-            className="flex items-center gap-1.5 text-sm font-semibold px-5 py-2.5 rounded-full transition-all"
-            style={{
-              background: "#1d5c3a",
-              color: "white",
-            }}
+          <motion.div
+            whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(29,92,58,0.15)" }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="rounded-full overflow-hidden"
           >
-            Sign In
-            <ArrowRight size={14} />
-          </Link>
+            <Link
+              href="/login"
+              className="flex items-center gap-1.5 text-sm font-semibold px-5 py-2.5 rounded-full transition-all"
+              style={{
+                background: "#1d5c3a",
+                color: "white",
+              }}
+            >
+              Sign In
+              <ArrowRight size={14} />
+            </Link>
+          </motion.div>
         </div>
       </nav>
 
@@ -84,70 +147,89 @@ export default function Home() {
         />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-28 text-center">
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-7 border"
-              style={{
-                background: "rgba(29,92,58,0.08)",
-                color: "#1d5c3a",
-                borderColor: "rgba(29,92,58,0.2)",
-              }}
+          <div>
+            {/* Headline & Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              <Sparkles size={12} />
-              Multi-Agent AI · Built for Indian Farmers
-            </div>
-
-            {/* Headline */}
-            <h1
-              className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight mb-6"
-              style={{ color: "#0f1f15" }}
-            >
-              Your farm&apos;s health,{" "}
-              <br className="hidden sm:block" />
-              <span
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-7 border"
                 style={{
-                  background: "linear-gradient(135deg, #1d5c3a 0%, #2d8653 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
+                  background: "rgba(29,92,58,0.08)",
+                  color: "#1d5c3a",
+                  borderColor: "rgba(29,92,58,0.2)",
                 }}
               >
-                diagnosed in seconds
-              </span>
-            </h1>
+                <Sparkles size={12} />
+                Multi-Agent AI · Built for Indian Farmers
+              </div>
+
+              {/* Headline */}
+              <h1
+                className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight mb-6"
+                style={{ color: "#0f1f15" }}
+              >
+                Your farm&apos;s health,{" "}
+                <br className="hidden sm:block" />
+                <span
+                  style={{
+                    background: "linear-gradient(135deg, #1d5c3a 0%, #2d8653 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  diagnosed in seconds
+                </span>
+              </h1>
+            </motion.div>
 
             {/* Subtext */}
-            <p
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
               className="max-w-lg mx-auto text-lg leading-relaxed mb-10"
               style={{ color: "#4b5563" }}
             >
               Take a photo of any affected leaf. FarmIQ&apos;s AI identifies the
               disease and delivers a step-by-step treatment plan — in Kannada,
               Hindi, or English.
-            </p>
+            </motion.p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-              <motion.div whileTap={{ scale: 0.97 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+              className="flex flex-col sm:flex-row gap-3 justify-center items-center"
+            >
+              <motion.div
+                whileHover={{ scale: 1.02, boxShadow: "0 6px 20px rgba(29,92,58,0.3)" }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="rounded-full"
+              >
                 <Link
                   href="/login"
                   className="flex items-center gap-2 font-semibold text-base px-7 py-3.5 rounded-full transition-all"
                   style={{
                     background: "#1d5c3a",
                     color: "white",
-                    boxShadow: "0 4px 20px rgba(29,92,58,0.25)",
                   }}
                 >
                   Get Started Free
                   <ArrowRight size={18} />
                 </Link>
               </motion.div>
-              <motion.div whileTap={{ scale: 0.97 }}>
+              <motion.div
+                whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="rounded-full"
+              >
                 <a
                   href="https://github.com"
                   target="_blank"
@@ -163,15 +245,15 @@ export default function Home() {
                   GitHub
                 </a>
               </motion.div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
           {/* Stats bar */}
           <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.65, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className="mt-16 inline-flex flex-wrap justify-center gap-6 sm:gap-10 rounded-2xl px-8 py-5 border"
             style={{
               background: "rgba(255,255,255,0.7)",
@@ -180,14 +262,20 @@ export default function Home() {
             }}
           >
             {[
-              { value: "95%", label: "Accuracy" },
-              { value: "3", label: "Languages" },
-              { value: "< 5s", label: "Diagnosis Time" },
-              { value: "50+", label: "Diseases Detected" },
+              { value: 5, label: "AI Agents", isNumeric: true },
+              { value: 3, label: "Languages", isNumeric: true },
+              { value: "Voice + Vision", label: "Inputs", isNumeric: false },
+              { value: "Multi-Agent Pipeline", label: "System", isNumeric: false },
             ].map((stat) => (
-              <div key={stat.label} className="text-center min-w-[64px]">
-                <p className="text-xl font-bold" style={{ color: "#1d5c3a" }}>
-                  {stat.value}
+              <div key={stat.label} className="text-center min-w-[64px] px-2">
+                <p className="text-xl font-bold flex justify-center items-center gap-0.5" style={{ color: "#1d5c3a" }}>
+                  {stat.isNumeric ? (
+                    <>
+                      <Counter value={Number(stat.value)} />
+                    </>
+                  ) : (
+                    stat.value
+                  )}
                 </p>
                 <p className="text-xs mt-0.5" style={{ color: "#6b7280" }}>
                   {stat.label}
@@ -220,7 +308,13 @@ export default function Home() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 gap-5"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
           {[
             {
               icon: Camera,
@@ -229,7 +323,6 @@ export default function Home() {
                 "Snap a photo of any leaf. Our vision AI instantly identifies the disease, its severity, and affected area.",
               iconBg: "#e8f5ee",
               iconColor: "#1d5c3a",
-              delay: 0,
             },
             {
               icon: Mic,
@@ -238,7 +331,6 @@ export default function Home() {
                 "Ask questions or hear diagnoses read aloud in Kannada, Hindi, or English. No reading required.",
               iconBg: "#fdf3e3",
               iconColor: "#92520a",
-              delay: 0.1,
             },
             {
               icon: BookOpen,
@@ -247,18 +339,18 @@ export default function Home() {
                 "Step-by-step treatment instructions, product recommendations, and prevention tips tailored to your crop.",
               iconBg: "#e8f0f5",
               iconColor: "#1a3d5c",
-              delay: 0.2,
             },
           ].map((feature) => (
             <motion.div
               key={feature.title}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: feature.delay }}
-              whileHover={{ y: -4 }}
-              className="rounded-2xl p-6 border transition-shadow"
+              variants={cardVariants}
+              whileHover={{
+                y: -4,
+                boxShadow: "0 12px 24px rgba(29,92,58,0.06), 0 4px 12px rgba(0,0,0,0.02)",
+                borderColor: "rgba(29,92,58,0.15)",
+              }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="rounded-2xl p-6 border transition-all duration-200"
               style={{
                 background: "white",
                 borderColor: "#f0f0f0",
@@ -282,7 +374,7 @@ export default function Home() {
               </p>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       {/* ── How it works ───────────────────────────────────────── */}
@@ -304,7 +396,13 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-5"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          >
             {[
               {
                 step: "01",
@@ -324,14 +422,10 @@ export default function Home() {
                 description:
                   "Receive a personalized treatment plan with exact steps, product names, and timelines. Listen to it aloud.",
               },
-            ].map((item, index) => (
+            ].map((item) => (
               <motion.div
                 key={item.step}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                variants={cardVariants}
                 className="relative rounded-2xl p-6 border"
                 style={{
                   background: "white",
@@ -356,7 +450,7 @@ export default function Home() {
                 </p>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -385,10 +479,15 @@ export default function Home() {
           <p className="text-sm mb-7" style={{ color: "rgba(255,255,255,0.65)" }}>
             Free to use. No app download needed. Works on any phone.
           </p>
-          <motion.div whileTap={{ scale: 0.97 }}>
+          <motion.div
+            whileHover={{ scale: 1.02, boxShadow: "0 8px 24px rgba(255,255,255,0.2)" }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="inline-block rounded-full overflow-hidden"
+          >
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 font-semibold px-7 py-3.5 rounded-full transition-colors"
+              className="inline-flex items-center gap-2 font-semibold px-7 py-3.5 rounded-full transition-all"
               style={{ background: "white", color: "#1d5c3a" }}
             >
               Start Now — It&apos;s Free

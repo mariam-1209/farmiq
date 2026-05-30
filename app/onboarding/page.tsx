@@ -95,13 +95,14 @@ export default function OnboardingPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-16"
+      className="desktop-bg"
       style={{
-        background: "#faf8f4",
         fontFamily: "var(--font-jakarta, system-ui, sans-serif)",
       }}
     >
-      <div className="w-full max-w-md">
+      <div className="phone-frame">
+        <div className="phone-frame-scrollable flex flex-col justify-center items-center px-4 py-16">
+          <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div
@@ -420,5 +421,7 @@ export default function OnboardingPage() {
         </div>
       </div>
     </div>
+  </div>
+</div>
   );
 }

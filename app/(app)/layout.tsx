@@ -27,15 +27,16 @@ export default async function AppLayout({
 
   return (
     <div
-      className="min-h-screen"
+      className="desktop-bg"
       style={{
-        background: "#faf8f4",
         fontFamily: "var(--font-jakarta, system-ui, sans-serif)",
       }}
     >
-      <TopBar />
-      <main className="max-w-md mx-auto pb-24 px-0">{children}</main>
-      <BottomNav />
+      <div className="phone-frame">
+        <TopBar />
+        <main className="phone-frame-scrollable px-0">{children}</main>
+        <BottomNav />
+      </div>
     </div>
   );
 }
