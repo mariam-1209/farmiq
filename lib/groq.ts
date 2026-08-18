@@ -9,4 +9,4 @@ export const groq = new Groq({
 });
 
 // Default model — fast, free tier, good at reasoning
-export const REASONING_MODEL = "llama-3.3-70b-versatile";
+export const REASONING_MODEL = "openai/gpt-oss-120b";
