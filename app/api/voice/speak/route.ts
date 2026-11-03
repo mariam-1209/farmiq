@@ -79,8 +79,8 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         text: textToSpeak,
         target_language_code: SARVAM_LANG_CODES[body.language],
-        speaker: "anushka",
-        model: "bulbul:v2",
+        speaker: "shubh",
+        model: "bulbul:v3",
       }),
     });
 
